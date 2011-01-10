@@ -5,13 +5,13 @@
 # AutoPush
 #
 # This program watches a directory for filesystem events and uses rsync to
-# 	push any changes files to a remote server. This is useful for editing
-# 	a web application's files locally while being able to test and use
-# 	the application code on a dedicated web server.
+#   push any changes files to a remote server. This is useful for editing
+#   a web application's files locally while being able to test and use
+#   the application code on a dedicated web server.
 #
-# Author::		Jared Jones (mailto:jcjones86@gmail.com)
-# Copyright::	Copyright (c) 2010 Jared Jones
-# License::		GPLv3 (GNU General Public License, v.3)
+# Author::      Jared Jones (mailto:jcjones86@gmail.com)
+# Copyright::   Copyright (c) 2010 Jared Jones
+# License::     GPLv3 (GNU General Public License, v.3)
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -35,12 +35,12 @@ require 'open3'
 
 ## CONSTANTS
 # - Change if using nonstandard name or when not in $PATH
-SSH					= 'ssh'
-RSYNC				= 'rsync'
-RSYNC_OPTS	= '-avz --delete'
-LOG_DIR			= '/var/log/'
-LOG_FILE		= 'autopush.log'
-LOG_AGE			= 'daily'
+SSH           = 'ssh'
+RSYNC         = 'rsync'
+RSYNC_OPTS    = '-avz --delete'
+LOG_DIR       = '/var/log/'
+LOG_FILE      = 'autopush.log'
+LOG_AGE       = 'daily'
 
 # - YAML config file (relative to script dir)
 #   - local_dir: local directory to watch
@@ -57,12 +57,12 @@ REQUIRED = [ 'local_dir', 'remote_dir', 'remote_host', 'remote_user' ]
 
 class AutoPush
 
-	def initialize(config)
-		@config = config
-		# Check for required fields and throw error if not found
-		REQUIRED.each do |key|
-			raise "Required config value not defined: #{key}" if config[key] == nil
-		end
+  def initialize(config)
+    @config = config
+    # Check for required fields and throw error if not found
+    REQUIRED.each do |key|
+      raise "Required config value not defined: #{key}" if config[key] == nil
+    end
 
     if @config['logging'] == true
       abs_log = "#{LOG_DIR}#{LOG_FILE}"
@@ -78,27 +78,27 @@ class AutoPush
       # No logging
       @log = Logger.new(nil)
     end
-	end
+  end
 
-	public
-	# Watch for file changes in the local directory specified
-	def watch
+  public
+  # Watch for file changes in the local directory specified
+  def watch
     @log.info("Running stream to watch #{@config['local_dir']}")
-		stream = FSEvents::Stream.watch(@config['local_dir']) do |events|
-			events.each do |event|
+    stream = FSEvents::Stream.watch(@config['local_dir']) do |events|
+      events.each do |event|
         if modf = event.modified_files
           @log.info("Modified files events: #{modf}")
           push_files(modf)
         end
       end
-		end
-		trap("INT") { stream.shutdown; puts "\nCaught interrupt"; exit } # Catch ctrl-c
-		stream.run
-	end
+    end
+    trap("INT") { stream.shutdown; puts "\nCaught interrupt"; exit } # Catch ctrl-c
+    stream.run
+  end
 
-	private
-	# Push files to remote server
-	def push_files(files)
+  private
+  # Push files to remote server
+  def push_files(files)
     files.each do |file|
       dir = @config['local_dir']
       rel_path = file[dir.length, file.length-dir.length] #Extract substr of rel path
@@ -115,16 +115,16 @@ class AutoPush
         @log.error("#{tmp_err}") unless tmp_err.empty?
       }
     end
-	end
+  end
 
 end
 
 # Read config file and start watching filesystem
 conf_file = File.dirname(__FILE__) + '/' + CONF_FILE
 if File.exist?(conf_file)
-	config = File.read(conf_file)
-	AutoPush.new(YAML.load(config)).watch
+  config = File.read(conf_file)
+  AutoPush.new(YAML.load(config)).watch
 else 
-	puts "Could not read config file: #{conf_file}"
+  puts "Could not read config file: #{conf_file}"
 end
 
