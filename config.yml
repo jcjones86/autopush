@@ -1,0 +1,7 @@
+local_dir: /Users/jared/something/
+remote_dir: /Users/jared/something/
+remote_host: jared-imac
+remote_port: 
+remote_user: jared
+remote_pass:
+logging: false

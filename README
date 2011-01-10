@@ -1,0 +1,27 @@
+== AutoPush ==
+
+Pushes changes to a remote directory via rsync. Configure local and remote
+directories in config.yml.
+
+
+== REQUIREMENTS ==
+
+ * Mac OS X (Uses FSEvents API)
+ * RubyCocoa
+ * Ruby 1.8.x (Untested on Ruby 1.9.x)
+ * fsevents gem
+   * http://rubygems.org/gems/fsevents
+   * https://github.com/ymendel/fsevents
+
+
+== HOW TO USE ==
+
+You can run this via:
+  ruby autopush.rb
+
+To run as a daemon:
+  ruby autopush_daemon.rb start
+
+To stop daemon:
+  ruby autopush_daemon.rb stop
+
