@@ -32,6 +32,7 @@ require 'rubygems'
 require 'fsevents'
 require 'logger'
 require 'open3'
+require 'yaml'
 
 ## CONSTANTS
 # - Change if using nonstandard name or when not in $PATH
