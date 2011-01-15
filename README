@@ -8,7 +8,7 @@ directories in config.yml.
 
  * Mac OS X (Uses FSEvents API)
  * RubyCocoa
- * Ruby 1.8.x (Untested on Ruby 1.9.x)
+ * Ruby 1.8.x (Ruby 1.9.x doesn't work with RubyCocoa)
  * fsevents gem
    * http://rubygems.org/gems/fsevents
    * https://github.com/ymendel/fsevents
@@ -24,4 +24,12 @@ To run as a daemon:
 
 To stop daemon:
   ruby autopush_daemon.rb stop
+
+NOTE: If you have installed Ruby 1.9.x and it is in your PATH,
+  make sure the scripts have executable rights (chmod 0700) and run
+  them as shell scripts: ./autopush.rb. I've chosen to use '#!/usr/bin/ruby'
+  instead of '#!/usr/bin/env ruby' for this reason.
+
+  Alternatively, you can use Ruby Version Manager (http://rvm.beginrescueend.com/)
+  to handle Ruby versions.
 
