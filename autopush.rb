@@ -76,9 +76,10 @@ class AutoPush
         @log = Logger.new(LOG_FILE, LOG_AGE)
       end
     else
-      # No logging
-      @log = Logger.new(nil)
+      @log = Logger.new(STDOUT)
     end
+
+    @log.datetime_format = "%H:%M:%S"
   end
 
   public
@@ -88,7 +89,6 @@ class AutoPush
     stream = FSEvents::Stream.watch(@config['local_dir']) do |events|
       events.each do |event|
         if modf = event.modified_files
-          @log.info("Modified files events: #{modf}")
           push_files(modf)
         end
       end
@@ -107,13 +107,12 @@ class AutoPush
       user = @config['remote_user']
       host = @config['remote_host']
       remote_dir = @config['remote_dir']
-      rsync_cmd = "#{RSYNC} #{RSYNC_OPTS} #{ssh_port} #{file} #{user}@#{host}:#{remote_dir}#{rel_path}"
+      rsync_cmd = "#{RSYNC} #{RSYNC_OPTS} #{ssh_port} #{file} #{user}@#{host}:#{remote_dir}#{rel_path} 2> /dev/null"
 
+      @log.info("File change... #{rel_path}")
       Open3::popen3("#{rsync_cmd}") { |stdin, stdout, stderr|
-        tmp_out = stdout.read.strip
-        tmp_err = stderr.read.strip
-        @log.info("#{tmp_out}") unless tmp_out.empty?
-        @log.error("#{tmp_err}") unless tmp_err.empty?
+        out = stdout.read.strip
+        @log.info("Pushed! #{rel_path}") unless out.empty?
       }
     end
   end
@@ -121,10 +120,10 @@ class AutoPush
 end
 
 # Read config file and start watching filesystem
-conf_file = File.dirname(__FILE__) + '/' + CONF_FILE
+conf_file = File::dirname(__FILE__) + '/' + CONF_FILE
 if File.exist?(conf_file)
-  config = File.read(conf_file)
-  AutoPush.new(YAML.load(config)).watch
+  config = File::read(conf_file)
+  AutoPush.new(YAML::load(config)).watch
 else 
   puts "Could not read config file: #{conf_file}"
 end
